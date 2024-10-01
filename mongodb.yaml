@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: wanderlust
+  labels:
+    app: mongo
+  name: deployment
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mongo
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: mongo
+    spec:
+      containers:
+      - image: mongo
+        name: mongo
+        ports:
+        - containerPort: 27017
+        volumeMounts:
+        - name: mongo-storage-claim
+          mountPath: /data/db
+        resources: {}
+      volumes:
+      - name: mongo-storage
+        mountPath: mongo-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-svc
+  namespace: wanderlust
+spec:
+  selector:
+    app: mongo
+  ports:
+  - port: 27017
+    targetPort: 27017
+    protocol: TCP
